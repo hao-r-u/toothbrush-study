@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>46把牙刷分类研究</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;600;700&family=Noto+Sans+SC:wght@300;400;500&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --ink: #1a1410;
+    --accent1: #c8553d;
+    --accent2: #4a7c59;
+    --accent3: #3d5a8a;
+    --card-bg: #faf7f2;
+    --border: #d4c9b0;
+    --muted: #8a7f6e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Noto Sans SC', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 80px 60px 60px;
+    border-bottom: 2px solid var(--ink);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '牙刷';
+    position: absolute;
+    right: -20px;
+    top: -40px;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 320px;
+    font-weight: 700;
+    color: rgba(26,20,16,0.04);
+    line-height: 1;
+    pointer-events: none;
+  }
+  .hero-label {
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 20px;
+  }
+  .hero-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: clamp(36px, 5vw, 72px);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 16px;
+  }
+  .hero-title span { color: var(--accent1); }
+  .hero-sub {
+    font-size: 15px;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.7;
+  }
+  .hero-meta {
+    margin-top: 40px;
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+  .meta-item { text-align: center; }
+  .meta-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 52px;
+    line-height: 1;
+    color: var(--ink);
+  }
+  .meta-label { font-size: 12px; color: var(--muted); margin-top: 4px; letter-spacing: 0.1em; }
+
+  /* NAV TABS */
+  .nav-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--ink);
+    background: var(--bg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .tab-btn {
+    flex: 1;
+    padding: 20px 16px;
+    background: none;
+    border: none;
+    border-right: 1px solid var(--border);
+    cursor: pointer;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .tab-btn:last-child { border-right: none; }
+  .tab-btn .tab-num {
+    font-family: 'DM Serif Display', serif;
+    font-size: 28px;
+    line-height: 1;
+    color: var(--border);
+    transition: color 0.2s;
+  }
+  .tab-btn.active { color: var(--ink); background: var(--card-bg); }
+  .tab-btn.active .tab-num { color: var(--accent1); }
+  .tab-btn:hover:not(.active) { background: rgba(0,0,0,0.02); }
+
+  /* CONTENT */
+  .tab-content { display: none; }
+  .tab-content.active { display: block; }
+
+  /* SECTION HEADER */
+  .section-header {
+    padding: 50px 60px 30px;
+    display: flex;
+    align-items: flex-start;
+    gap: 30px;
+    border-bottom: 1px solid var(--border);
+  }
+  .section-number {
+    font-family: 'DM Serif Display', serif;
+    font-size: 96px;
+    line-height: 0.85;
+    color: var(--border);
+    flex-shrink: 0;
+  }
+  .section-info { flex: 1; }
+  .section-tag {
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--accent-color);
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+  .section-question {
+    font-size: 18px;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .section-count {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 10px;
+  }
+
+  /* GRID */
+  .categories-grid {
+    padding: 40px 60px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+  }
+
+  .category-card {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    transition: box-shadow 0.2s, transform 0.2s;
+  }
+  .category-card:hover {
+    box-shadow: 4px 4px 0 var(--ink);
+    transform: translate(-2px, -2px);
+  }
+
+  .card-header {
+    padding: 20px 20px 14px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .card-title-group { flex: 1; }
+  .card-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.3;
+    margin-bottom: 5px;
+  }
+  .card-products {
+    font-size: 11px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .card-features {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+  .card-count-badge {
+    background: var(--ink);
+    color: var(--bg);
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    padding: 6px 10px;
+    min-width: 36px;
+    text-align: center;
+    flex-shrink: 0;
+  }
+
+  /* TOOTHBRUSH IMAGES */
+  .brushes-row {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .brush-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    cursor: pointer;
+  }
+  .brush-img-wrap {
+    width: 56px;
+    height: 56px;
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    overflow: hidden;
+    background: #fff;
+    position: relative;
+  }
+  .brush-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s;
+  }
+  .brush-item:hover .brush-img-wrap img { transform: scale(1.1); }
+  .brush-img-wrap .placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 9px;
+    color: var(--muted);
+    text-align: center;
+    line-height: 1.2;
+    background: #f0ebe0;
+  }
+  .brush-label {
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* LIGHTBOX */
+  .lightbox {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(26,20,16,0.92);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .lightbox.show { display: flex; }
+  .lightbox img {
+    max-width: 80vw;
+    max-height: 70vh;
+    object-fit: contain;
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+  .lightbox-label {
+    color: #fff;
+    font-family: 'Noto Serif SC', serif;
+    font-size: 18px;
+  }
+  .lightbox-close {
+    position: absolute;
+    top: 24px; right: 32px;
+    color: #fff;
+    font-size: 32px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    line-height: 1;
+  }
+
+  /* COLOR ACCENTS PER TAB */
+  #tab1 .section-tag { color: var(--accent1); }
+  #tab1 .card-header { border-left: 3px solid var(--accent1); }
+  #tab2 .section-tag { color: var(--accent2); }
+  #tab2 .card-header { border-left: 3px solid var(--accent2); }
+  #tab3 .section-tag { color: var(--accent3); }
+  #tab3 .card-header { border-left: 3px solid var(--accent3); }
+
+  #tab1 .card-count-badge { background: var(--accent1); }
+  #tab2 .card-count-badge { background: var(--accent2); }
+  #tab3 .card-count-badge { background: var(--accent3); }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    .hero { padding: 40px 24px 40px; }
+    .categories-grid { padding: 24px; grid-template-columns: 1fr; }
+    .section-header { padding: 30px 24px 20px; flex-direction: column; gap: 10px; }
+    .section-number { font-size: 60px; }
+    .nav-tabs { overflow-x: auto; }
+    .tab-btn { min-width: 120px; }
+  }
+
+  .github-note {
+    padding: 24px 60px;
+    border-top: 1px solid var(--border);
+    background: var(--card-bg);
+    font-size: 12px;
+    color: var(--muted);
+    text-align: center;
+  }
+  .github-note code {
+    background: var(--border);
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-family: monospace;
+    color: var(--ink);
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-label">设计研究 · 意象分类 · 2024</div>
+  <h1 class="hero-title">46把牙刷<br><span>三维意象</span>分类研究</h1>
+  <p class="hero-sub">从外观、功能、感知三个维度，对46把牙刷进行系统性意象分类，探索产品设计中的多元语义层次。</p>
+  <div class="hero-meta">
+    <div class="meta-item">
+      <div class="meta-num">46</div>
+      <div class="meta-label">把牙刷</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-num">3</div>
+      <div class="meta-label">分类维度</div>
+    </div>
+    <div class="meta-item">
+      <div class="meta-num">44</div>
+      <div class="meta-label">分类标签</div>
+    </div>
+  </div>
+</div>
+
+<!-- TABS -->
+<div class="nav-tabs">
+  <button class="tab-btn active" onclick="switchTab(1)">
+    <span class="tab-num">21</span>
+    外观意象分类
+    <span style="font-size:11px;color:var(--muted)">它"长得像什么"</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab(2)">
+    <span class="tab-num">13</span>
+    功能意象分类
+    <span style="font-size:11px;color:var(--muted)">它"用起来像什么"</span>
+  </button>
+  <button class="tab-btn" onclick="switchTab(3)">
+    <span class="tab-num">10</span>
+    感知意象分类
+    <span style="font-size:11px;color:var(--muted)">它"给人什么感觉"</span>
+  </button>
+</div>
+
+<!-- TAB 1: 外观意象 -->
+<div class="tab-content active" id="tab1">
+  <div class="section-header">
+    <div class="section-number">01</div>
+    <div class="section-info">
+      <div class="section-tag">外观意象分类表</div>
+      <div class="section-title">它"长得像什么"</div>
+      <div class="section-question">基于产品外形与视觉特征的意象联想分类</div>
+      <div class="section-count">共 21 个分类标签，涵盖 46 把牙刷</div>
+    </div>
+  </div>
+  <div class="categories-grid" id="grid1"></div>
+</div>
+
+<!-- TAB 2: 功能意象 -->
+<div class="tab-content" id="tab2">
+  <div class="section-header">
+    <div class="section-number">02</div>
+    <div class="section-info">
+      <div class="section-tag">功能意象分类表</div>
+      <div class="section-title">它"用起来像什么"</div>
+      <div class="section-question">基于使用体验与功能联想的意象分类</div>
+      <div class="section-count">共 13 个分类标签，涵盖 46 把牙刷</div>
+    </div>
+  </div>
+  <div class="categories-grid" id="grid2"></div>
+</div>
+
+<!-- TAB 3: 感知意象 -->
+<div class="tab-content" id="tab3">
+  <div class="section-header">
+    <div class="section-number">03</div>
+    <div class="section-info">
+      <div class="section-tag">感知意象分类表</div>
+      <div class="section-title">它"给人什么感觉"</div>
+      <div class="section-question">基于感官体验与情感感知的意象分类</div>
+      <div class="section-count">共 10 个分类标签，涵盖 46 把牙刷</div>
+    </div>
+  </div>
+  <div class="categories-grid" id="grid3"></div>
+</div>
+
+<div class="github-note">
+  图片路径：<code>images/{编号}.jpg</code>，例如 <code>images/1-1.jpg</code>。将图片上传至 GitHub 仓库 <code>images/</code> 文件夹后即可正常显示。
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+  <button class="lightbox-close" onclick="closeLightbox()">×</button>
+  <img id="lightbox-img" src="" alt="">
+  <div class="lightbox-label" id="lightbox-label"></div>
+</div>
+
+<script>
+// ===================== DATA =====================
+const data = {
+  tab1: {
+    title: '外观意象分类表',
+    categories: [
+      {
+        name: '铅笔/彩笔型',
+        products: '铅笔、马克笔、彩色笔',
+        features: '细长条状，色彩鲜明，文具感强',
+        brushes: ['2-2','4-2','5-2','7-2','8-4','10-1','11-1','12-1']
+      },
+      {
+        name: '糖果/冰棒型',
+        products: '糖果、棒棒糖、冰棒',
+        features: '清爽配色、彩虹配色、圆润可爱',
+        brushes: ['2-3','5-3','5-7','8-1','8-3','13-6','2-1','(碳棒型)']
+      },
+      {
+        name: '胶囊/果冻型',
+        products: '胶囊、果冻、丹丸',
+        features: '圆角饱满、透明或温润感、柔和感',
+        brushes: ['2-1','3-1','13-6']
+      },
+      {
+        name: '试管/透明管型',
+        products: '试管、实验器皿',
+        features: '透明桶、科技感、卫生感',
+        brushes: ['1-3','2-1','7-1']
+      },
+      {
+        name: '金属笔管型',
+        products: '金属笔、口红管、铅管',
+        features: '金属材质、圆柱形、晶莹感',
+        brushes: ['3-2','5-1','9-3','15-1','15-3']
+      },
+      {
+        name: '竹木材料型',
+        products: '竹子、树枝、木棍',
+        features: '木质纹理、简木色、自然材料',
+        brushes: ['2-4','2-6']
+      },
+      {
+        name: '筷子/藕池植藕型',
+        products: '筷子、细棍、黑色笔杆',
+        features: '细棍、素雅、些许装饰',
+        brushes: ['2-4','9-1','(1-2,12-2)']
+      },
+      {
+        name: '勺子/汤匙型',
+        products: '勺子、量匙',
+        features: '头部圆润较大、柄部细长',
+        brushes: ['2-5','6-2']
+      },
+      {
+        name: '羽毛/叶片型',
+        products: '羽毛、叶片、水滴',
+        features: '轻盈、柔和曲线、刷毛蓬松',
+        brushes: ['1-2','5-4','13-5','14-1']
+      },
+      {
+        name: '告别帽/小护手',
+        products: '防帽、小护手',
+        features: '前置功能帽盖、有别样结构',
+        brushes: ['1-3','P#8']
+      },
+      {
+        name: '船架/角展型',
+        products: '船架、角尾、苹片',
+        features: '扁长、流线、前水像船底',
+        brushes: ['4-1','0-1']
+      },
+      {
+        name: '旅行收纳型',
+        products: '笔帽、收纳管、胶囊盒',
+        features: '可折叠、可拆卸、可保护结构',
+        brushes: ['2-4','3-1','7-1','13-4']
+      },
+      {
+        name: '剃须刀/工具型',
+        products: '剃须刀、螺丝刀、护理工具',
+        features: '深色、金属、硬朗框柄',
+        brushes: ['9-2','11-2','(15-2)']
+      },
+      {
+        name: '麦克风/喇叭头型',
+        products: '麦克风、小喇叭工具',
+        features: '圆形逐渐扩展形喇叭突出',
+        brushes: ['8-2','13-1']
+      },
+      {
+        name: '运动握持型',
+        products: '球拍柄、运动器材握把',
+        features: '防滑纹理、握感很稳、功能曲线',
+        brushes: ['1-1','13-2']
+      },
+      {
+        name: '粉末/块状球握型',
+        products: '乐高、积木、玩具',
+        features: '大面积块状像感、儿童感强',
+        brushes: ['8-1','8-3','13-1']
+      },
+      {
+        name: '字形型型',
+        products: '蛇形、波浪、弹簧',
+        features: '前端有趣、Z形波浪的结构',
+        brushes: ['4-1','9-2']
+      },
+      {
+        name: '刷毛X型复盖型',
+        products: '交叉设计、花藤、鱼鳞',
+        features: '刷毛颜色呈交叉交叉状',
+        brushes: ['14-2']
+      },
+      {
+        name: '三头美型',
+        products: '美容、包裹刷、三面刷',
+        features: '三刷头、多面包裹感',
+        brushes: ['13-1']
+      },
+      {
+        name: '极简医疗器具型',
+        products: '医疗器具、牙科工具',
+        features: '白黑双配色、克制、不华、专业',
+        brushes: ['1-1','2-2','9-1','11-2','13-3','(14-1,10-1,15-2)']
+      },
+      {
+        name: '球/圆头型',
+        products: '球形、圆头设计',
+        features: '圆润饱满的头部设计',
+        brushes: ['8-2','13-1']
+      }
+    ]
+  },
+  tab2: {
+    title: '功能意象分类表',
+    categories: [
+      {
+        name: '基础刷洁型',
+        products: '扫帚、扫清刷、径清刷',
+        features: '大面积清洁法、日常清洁',
+        brushes: ['1-1','1-2','2-5','4-2','5-2','13-3','14-1'],
+        count: 7
+      },
+      {
+        name: '美白覆盖型',
+        products: '笔刷、细毛刷',
+        features: '笔尖、紧密感、覆盖效果',
+        brushes: ['2-1','2-5','4-2','5-5','8-1','9-3','13-3','15-1'],
+        count: 8
+      },
+      {
+        name: '细部深入型',
+        products: '画笔、针刷、牙柱',
+        features: '小巧、细腻、深入牙缝',
+        brushes: ['2-2','2-3','5-3','10-1','12-2','14-2'],
+        count: 6
+      },
+      {
+        name: '护理保健型',
+        products: '牙结、按摩器',
+        features: '软毛、减压、缝隙护理',
+        brushes: ['1-2','1-3','2-3','5-3','9-1','10-2','11-2','12-2','13-5','12-6'],
+        count: 11
+      },
+      {
+        name: '多角/多面清洁型',
+        products: '刮刀、多功能清洁器',
+        features: '古旧机、360°、多面材料',
+        brushes: ['1-5','5-4','13-5','14-2'],
+        count: 4
+      },
+      {
+        name: '正畸专用型',
+        products: '牙刷刷头、小细毛子',
+        features: '侧小刷头、多角度、矫正清洁',
+        brushes: ['10-1'],
+        count: 1
+      },
+      {
+        name: '按摩型',
+        products: '按摩球、按摩棒',
+        features: '按摩球、软胶、减压',
+        brushes: ['5-3','13-2','13-6'],
+        count: 3
+      },
+      {
+        name: '婴幼指套型',
+        products: '牙刷、活动关节',
+        features: '套到刷头、有电池刷、机合齿器',
+        brushes: ['4-1','5-4','8-2','13-2'],
+        count: 4
+      },
+      {
+        name: '便携旅行型',
+        products: '折叠牙、管道、收纳盒',
+        features: '折叠、翻转、收纳、旅行装置',
+        brushes: ['2-6','3-1','7-1','13-4'],
+        count: 4
+      },
+      {
+        name: '可替换软头型',
+        products: '乐高、刷孔刀刀头',
+        features: '整体刷头、可拆分、可切换',
+        brushes: ['3-2','5-1','9-3'],
+        count: 3
+      },
+      {
+        name: '异形卫生型',
+        products: '消毒盒、紫外线盒',
+        features: '智能示意、防菌、抗菌',
+        brushes: ['3-1','6-4','9-3'],
+        count: 3
+      },
+      {
+        name: '防滑握持型',
+        products: '建筑柱、工具手柄',
+        features: '防滑把握、人体工学、稳固',
+        brushes: ['1-1','2-1','2-2','4-1','7-1','7-2','8-2','12-2','13-2','14-2','15-1','15-2'],
+        count: 12
+      },
+      {
+        name: '儿童引导型',
+        products: '玩具、彩笔、游戏道具',
+        features: '彩色、可爱、锻炼刷牙压力',
+        brushes: ['2-3','6-2','9-1','8-3','11-1'],
+        count: 5
+      }
+    ]
+  },
+  tab3: {
+    title: '感知意象分类表',
+    categories: [
+      {
+        name: '专业医疗感',
+        products: '可靠、精准、卫生、理性',
+        features: '黑白双色、极简、细腻分、牙科工具感',
+        brushes: ['1-1','1-2','1-3','2-2','9-1','10-1','11-2','12-2','13-3','14-1','15-1','15-2'],
+        count: 13
+      },
+      {
+        name: '爱护小心感',
+        products: '温柔、不刺激、护嗅',
+        features: '软毛、精密刷头、圆润倒角、浅色',
+        brushes: ['1-2','2-3','9-3','10-2','12-1','12-2','13-5','13-6'],
+        count: 8
+      },
+      {
+        name: '科技洁净感',
+        products: '智能、平净、未来、卫生',
+        features: '透明材质、简洁、抗菌、金属细节',
+        brushes: ['1-3','2-1','3-1','6-4','9-3','15-1'],
+        count: 6
+      },
+      {
+        name: '贵禧精感感',
+        products: '礼品感、品质感、精美化',
+        features: '金属壳、特殊金、镀铬色、礼盒',
+        brushes: ['3-2','5-1','9-3','11-2','15-1','15-3'],
+        count: 6
+      },
+      {
+        name: '自然环保感',
+        products: '朴素、自然、可持续',
+        features: '竹木材质、绿色、可堆体',
+        brushes: ['2-4','2-6','5-1'],
+        count: 3
+      },
+      {
+        name: '童趣糖糖感',
+        products: '可爱、轻松、平衡、超压力',
+        features: '彩虹色、卡通、糖果感、圆润感、圆润',
+        brushes: ['2-3','9-2','7-2','8-1','9-3','11-1','12-1','13-9'],
+        count: 8
+      },
+      {
+        name: '健改生活感',
+        products: '方便、日常、轻量、旅行',
+        features: '折金、收纳、整富、可拆卸',
+        brushes: ['2-4','3-1','7-1','13-4'],
+        count: 4
+      },
+      {
+        name: '强烈个性感',
+        products: '年轻、特别、现代沃达点缺',
+        features: '撞色、重量、员彩刷头、特殊结构',
+        brushes: ['2-1','4-3','5-4','8-2','14-2'],
+        count: 5
+      },
+      {
+        name: '动动王道感',
+        products: '有力量、稳定、效率高',
+        features: '防滑机、深色、更大、工具感',
+        brushes: ['1-1','6-1','9-2','13-2'],
+        count: 4
+      },
+      {
+        name: '仪式感',
+        products: '特别、正式的场合感',
+        features: '精致外观、礼品包装',
+        brushes: ['3-2','15-1','15-3'],
+        count: 3
+      }
+    ]
+  }
+};
+
+// ===================== PARSE IDS =====================
+function parseIds(raw) {
+  if (!raw) return [];
+  return raw
+    .replace(/[()（）\[\]]/g, '')
+    .split(',')
+    .map(s => s.trim())
+    .filter(s => s && /\d/.test(s));
+}
+
+// ===================== RENDER =====================
+function imgPath(id) {
+  return `images/${id}.jpg`;
+}
+
+function renderBrushes(ids) {
+  if (!ids || ids.length === 0) return '';
+  return ids.map(id => `
+    <div class="brush-item" onclick="openLightbox('${imgPath(id)}','编号 ${id}')">
+      <div class="brush-img-wrap">
+        <img src="${imgPath(id)}" alt="${id}"
+             onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="placeholder" style="display:none">${id}</div>
+      </div>
+      <span class="brush-label">${id}</span>
+    </div>
+  `).join('');
+}
+
+function renderGrid(tabKey, gridId) {
+  const cats = data[tabKey].categories;
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = cats.map(cat => {
+    const ids = parseIds(cat.brushes ? cat.brushes.join(',') : '');
+    const count = cat.count || ids.length;
+    return `
+      <div class="category-card">
+        <div class="card-header">
+          <div class="card-title-group">
+            <div class="card-title">${cat.name}</div>
+            <div class="card-products">代表产品：${cat.products || ''}</div>
+            ${cat.features ? `<div class="card-features">特征：${cat.features}</div>` : ''}
+          </div>
+          <div class="card-count-badge">${count}</div>
+        </div>
+        <div class="brushes-row">
+          ${renderBrushes(ids)}
+          ${ids.length === 0 ? '<span style="font-size:12px;color:var(--muted);padding:8px">（图片上传后显示）</span>' : ''}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+renderGrid('tab1', 'grid1');
+renderGrid('tab2', 'grid2');
+renderGrid('tab3', 'grid3');
+
+// ===================== TABS =====================
+function switchTab(n) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab' + n).classList.add('active');
+  document.querySelectorAll('.tab-btn')[n - 1].classList.add('active');
+}
+
+// ===================== LIGHTBOX =====================
+function openLightbox(src, label) {
+  const lb = document.getElementById('lightbox');
+  document.getElementById('lightbox-img').src = src;
+  document.getElementById('lightbox-label').textContent = label;
+  lb.classList.add('show');
+}
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('show');
+}
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+</script>
+</body>
+</html>
